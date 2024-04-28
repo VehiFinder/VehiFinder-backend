@@ -1,9 +1,11 @@
 from bs4 import BeautifulSoup
 import requests
 
+## Orden: nombre, precio, año, kilometraje, localización, imagen
+carName = "mazda"
 pages = {
     "TuCarro": {
-        "url": "https://vehiculos.tucarro.com.co/ford-focus",
+        "url": f"https://vehiculos.tucarro.com.co/{carName}",
         "criteria": {
             "classes": {
                 ".ui-search-item__title": 1,
@@ -12,24 +14,24 @@ pages = {
                 ".ui-search-card-attributes__attribute:nth-of-type(2)": 4, 
                 ".ui-search-item__group__element.ui-search-item__location": 5,
                 ".andes-carousel-snapped__slide:not(.ui-search-billboard__card)": 6,
-                },
+            },
         },
         "image_src": "data-src"
     },
     "autocosmos": {
-        "url": "https://www.autocosmos.com.co/auto/usado/bmw",
+        "url": f"https://www.autocosmos.com.co/auto/usado/{carName}",
         "criteria": {
-            "classes": ".listing-card__car",
+            "classes": {
+                ".listing-card__car": 1,
+                ".listing-card__price-value": 2,
+                ".listing-card__year": 3,
+                ".listing-card__km": 4,
+                ".listing-card__location": 5,
+                ".listing-card__image": 6,
+            },
         },
-        "image_src": "data-src"
+        "image_src": "src"
     },
-    "automax": {
-      "url": "https://automax.com.co/",
-      "criteria": {
-        
-      },
-      
-    }
 }
 #Precio, nombre, año, kilometraje, 
 
@@ -47,6 +49,8 @@ def scrape_function(page_name):
     criteria = pages.get(page_name).get("criteria")
     url = pages.get(page_name).get("url")
     get_page = requests.get(url)
+    if get_page.status_code != 200:
+        print("Error retrieving website")
     html_obtenido = get_page.text
     soup = BeautifulSoup(html_obtenido, "html.parser")
     classes = criteria.get("classes")
@@ -54,25 +58,25 @@ def scrape_function(page_name):
     content = soup.select(css_selector)
     attributes = {1: [], 2:[], 3: [], 4:[], 5:[], 6:[]}
     iterator = 0
-    # real_classes = [key for x in content for key in classes.keys() if "." + x['class'][0] in key]
     for value in content:
-        if(value.img):
-            lista = attributes[6]
-            lista.append(value.img.get(pages.get(page_name).get("image_src")))
-        else:
-            class_name = [key for key in classes.keys() if value["class"][0] in key]
-            if len(class_name) >= 2:
-                    name = class_name[iterator]
-                    lista = attributes[classes.get(name)]
-                    lista.append(value.text)
-                    if iterator == len(class_name) - 1:
-                        iterator = 0
-                    else:
-                     iterator += 1
-            else:
-                lista = attributes[classes.get(class_name[0])]       
-                lista.append(value.text)
-    cars = create_cars(attributes)
+        print(value.text)
+    #     if(value.img):
+    #         lista = attributes[6]
+    #         lista.append(value.img.get(pages.get(page_name).get("image_src")))
+    #     else:
+    #         class_name = [key for key in classes.keys() if value["class"][0] in key]
+    #         if len(class_name) >= 2:
+    #                 name = class_name[iterator]
+    #                 lista = attributes[classes.get(name)]
+    #                 lista.append(value.get_text(separator=" ", strip=True))
+    #                 if iterator == len(class_name) - 1:
+    #                     iterator = 0
+    #                 else:
+    #                  iterator += 1
+    #         else:
+    #             lista = attributes[classes.get(class_name[0])]       
+    #             lista.append(value.get_text(separator=" ", strip=True))
+    # cars = create_cars(attributes)
     return cars 
 
 def create_cars(attributes):
@@ -86,16 +90,16 @@ def create_cars(attributes):
      
     return cars
 
-
+def print_cars(cars):
+    for car in cars:
+        print(car.nombre)
+        print(car.precio)
+        print(car.año)
+        print(car.kilometraje)
+        print(car.ubicacion)
+        print(car.imagen)
+        print("----------")
     
 # Calls
-cars = scrape_function("TuCarro")
-for car in cars:
-    # print(car.nombre)
-    # print(car.precio)
-    # print(car.año)
-    # print(car.kilometraje)
-    # print(car.ubicacion)
-    # print(car.imagen)
-    print("----------")
-    
+vardiautos = scrape_function("vardiautos")
+# print_cars(vardiautos)
