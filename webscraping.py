@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 
+
+
 ## Orden: nombre, precio, año, kilometraje, localización, imagen
 carName = "mazda"
 pages = {
-    "TuCarro": {
+    "tucarro": {
         "url": f"https://vehiculos.tucarro.com.co/{carName}",
         "criteria": {
             "classes": {
@@ -59,24 +61,24 @@ def scrape_function(page_name):
     attributes = {1: [], 2:[], 3: [], 4:[], 5:[], 6:[]}
     iterator = 0
     for value in content:
-        print(value.text)
-    #     if(value.img):
-    #         lista = attributes[6]
-    #         lista.append(value.img.get(pages.get(page_name).get("image_src")))
-    #     else:
-    #         class_name = [key for key in classes.keys() if value["class"][0] in key]
-    #         if len(class_name) >= 2:
-    #                 name = class_name[iterator]
-    #                 lista = attributes[classes.get(name)]
-    #                 lista.append(value.get_text(separator=" ", strip=True))
-    #                 if iterator == len(class_name) - 1:
-    #                     iterator = 0
-    #                 else:
-    #                  iterator += 1
-    #         else:
-    #             lista = attributes[classes.get(class_name[0])]       
-    #             lista.append(value.get_text(separator=" ", strip=True))
-    # cars = create_cars(attributes)
+        # print(value.get_text(separator=" ", strip=True))
+        if(value.img):
+            lista = attributes[6]
+            lista.append(value.img.get(pages.get(page_name).get("image_src")))
+        else:
+            class_name = [key for key in classes.keys() if value["class"][0] in key]
+            if len(class_name) >= 2:
+                    name = class_name[iterator]
+                    lista = attributes[classes.get(name)]
+                    lista.append(value.get_text(separator=" ", strip=True))
+                    if iterator == len(class_name) - 1:
+                        iterator = 0
+                    else:
+                     iterator += 1
+            else:
+                lista = attributes[classes.get(class_name[0])]       
+                lista.append(value.get_text(separator=" ", strip=True))
+    cars = create_cars(attributes)
     return cars 
 
 def create_cars(attributes):
@@ -101,5 +103,7 @@ def print_cars(cars):
         print("----------")
     
 # Calls
-vardiautos = scrape_function("vardiautos")
-# print_cars(vardiautos)
+tucarro = scrape_function("tucarro")
+print(tucarro)
+autocosmos = scrape_function("autocosmos")
+print(autocosmos)
