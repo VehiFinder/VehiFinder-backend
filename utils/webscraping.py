@@ -5,13 +5,14 @@ import requests
 
 # Precio, nombre, año, kilometraje,
 class Carro:
-    def __init__(self, nombre, precio, año, kilometraje, ubicacion, imagen):
+    def __init__(self, nombre, precio, año, kilometraje, ubicacion, imagen, link):
         self.nombre = nombre  # Marca del carro
         self.año = año  # Año de fabricación
         self.kilometraje = kilometraje  # Kilometraje del carro
         self.precio = precio  # Precio del carro
         self.ubicacion = ubicacion  # Ubicación del carro
         self.imagen = imagen  # Imagen del carro
+        self.link = link # Link de la publicación
 
 
 def scrape_function(page_name, car_name):
@@ -36,9 +37,11 @@ def scrape_function(page_name, car_name):
                     ".ui-search-card-attributes__attribute:nth-of-type(2)": 4,
                     ".ui-search-item__group__element.ui-search-item__location": 5,
                     ".andes-carousel-snapped__slide:not(.ui-search-billboard__card)": 6,
+                    ".ui-search-item__group.ui-search-item__group--title": 7,
                 },
             },
             "image_src": "data-src",
+            "link": "href",
         },
         "autocosmos": {
             "url": f"https://www.autocosmos.com.co/auto/usado?q={autocosmosName}",
@@ -69,13 +72,16 @@ def scrape_function(page_name, car_name):
     classes = criteria.get("classes")
     css_selector = ", ".join([f"{class_name}" for class_name in classes.keys()])
     content = soup.select(css_selector)
-    attributes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: []}
+    attributes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
     iterator = 0
     for value in content:
         print(value.get_text(separator=" ", strip=True))
         if value.img:
             lista = attributes[6]
             lista.append(value.img.get(pages.get(page_name).get("image_src")))
+        elif value.a:
+            lista = attributes[7]
+            lista.append(value.a.get(pages.get(page_name).get("link")))
         else:
             class_name = [key for key in classes.keys() if value["class"][0] in key]
             if len(class_name) >= 2:
@@ -103,11 +109,11 @@ def create_cars(attributes):
             attributes[4][car_index],
             attributes[5][car_index],
             attributes[6][car_index],
+            attributes[7][car_index],
         )
         cars.append(new_car)
 
     return cars
-
 
 # def print_cars(cars):
 #     for car in cars:
