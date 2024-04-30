@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import re
 # import main as fl
 
 
@@ -87,6 +88,7 @@ def scrape_function(page_name, car_name):
             if len(class_name) >= 2:
                 name = class_name[iterator]
                 lista = attributes[classes.get(name)]
+                # lista.append(''.join(filter(str.isdigit, value.get_text(separator=" ", strip=True))))
                 lista.append(value.get_text(separator=" ", strip=True))
                 if iterator == len(class_name) - 1:
                     iterator = 0
@@ -104,9 +106,9 @@ def create_cars(attributes):
     for car_index in range(0, len(attributes[1])):
         new_car = Carro(
             attributes[1][car_index],
-            attributes[2][car_index],
+            re.sub("[^0-9]", "", attributes[2][car_index]),
             attributes[3][car_index],
-            attributes[4][car_index],
+            re.sub("[^0-9]", "", attributes[4][car_index]),
             attributes[5][car_index],
             attributes[6][car_index],
             attributes[7][car_index],
@@ -114,6 +116,8 @@ def create_cars(attributes):
         cars.append(new_car)
 
     return cars
+
+# scrape_function("tucarro", "mazda 3")
 
 # def print_cars(cars):
 #     for car in cars:
