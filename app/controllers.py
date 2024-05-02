@@ -67,7 +67,17 @@ def get_autos_by_filters(car_name):
     if precio_min and precio_max:
         filters["precio"] = {"$gte": precio_min, "$lte": precio_max}
     
+    # Parámetros para la paginación
+    page = int(request.args.get('page', 1))
+    autos_por_pagina = int(request.args.get('autos_por_pagina', 3))
+    
     cars = models.CarModel.get_cars_by_filters(filters)
+    
+     # Se calcula el índice de inicio y fin
+    inicio = (page - 1) * autos_por_pagina
+    fin = inicio + autos_por_pagina
+    cars = cars[inicio:fin]
+    
     return json_util.dumps([car for car in cars])
 
 
