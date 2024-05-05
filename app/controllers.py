@@ -38,7 +38,6 @@ def autos():
 @app.route('/api/autos/<string:car_name>')
 def get_autos_by_filters(car_name):
     filters={}
-    
     carName = scrape_function("tucarro", car_name)
     for car in carName:
         models.CarModel.save_car(car)
@@ -69,7 +68,7 @@ def get_autos_by_filters(car_name):
     
     # Parámetros para la paginación
     page = int(request.args.get('page', 1))
-    autos_por_pagina = int(request.args.get('autos_por_pagina', 3))
+    autos_por_pagina = int(request.args.get('autos_por_pagina', 24))
     
     cars = models.CarModel.get_cars_by_filters(filters)
     
