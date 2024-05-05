@@ -38,9 +38,10 @@ def autos():
 @app.route('/api/autos/<string:car_name>')
 def get_autos_by_filters(car_name):
     filters={}
-    carName = scrape_function("tucarro", car_name)
-    for car in carName:
-        models.CarModel.save_car(car)
+    page_number = int(request.args.get('page'))
+    carName = scrape_function("tucarro", car_name, page_number)
+    # for car in carName:
+    models.CarModel.save_car(carName)
     threading.Timer(7.0, delete_cars, args=[carName]).start()
     
     year_min = request.args.get('year_min')
@@ -67,15 +68,15 @@ def get_autos_by_filters(car_name):
         filters["precio"] = {"$gte": precio_min, "$lte": precio_max}
     
     # Parámetros para la paginación
-    page = int(request.args.get('page', 1))
-    autos_por_pagina = int(request.args.get('autos_por_pagina', 24))
+    # page = int(request.args.get('page', 1))
+    # autos_por_pagina = int(request.args.get('autos_por_pagina', 48))
     
     cars = models.CarModel.get_cars_by_filters(filters)
     
      # Se calcula el índice de inicio y fin
-    inicio = (page - 1) * autos_por_pagina
-    fin = inicio + autos_por_pagina
-    cars = cars[inicio:fin]
+    # inicio = (page - 1) * autos_por_pagina
+    # fin = inicio + autos_por_pagina
+    # cars = cars[inicio:fin]
     
     return json_util.dumps([car for car in cars])
 
