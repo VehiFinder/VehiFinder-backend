@@ -18,7 +18,7 @@ def delete_cars(car_name):
     for car in car_name:
         models.CarModel.delete_car(car.nombre)
 
-@app.route('/autos')
+@app.route('/api/autos')
 def autos():
     carName = scrape_function("tucarro", "")
     for car in carName:
@@ -35,7 +35,7 @@ def autos():
 #     threading.Timer(30.0, delete_cars, args=[carName]).start()
 #     return json_util.dumps([car for car in cars])
 
-@app.route('/autos/<string:car_name>')
+@app.route('/api/autos/<string:car_name>')
 def get_autos_by_filters(car_name):
     filters={}
     
