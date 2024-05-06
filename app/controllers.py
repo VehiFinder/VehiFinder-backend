@@ -18,12 +18,16 @@ def delete_cars(car_name):
     for car in car_name:
         models.CarModel.delete_car(car.nombre)
 
+
 @app.route('/api/autos')
 def autos():
     page_number = int(request.args.get('page'))
+    
     carName = scrape_function("tucarro", "", page_number)
     models.CarModel.save_car(carName)
     threading.Timer(7.0, delete_cars, args=[carName]).start()
+    
+    carName.sort(key=lambda x: int(x.precio)/int(x.kilometraje))
     return json_util.dumps([car.__dict__ for car in carName])
 
 # @app.route('/autos/<string:car_name>/<string:year>')
@@ -77,6 +81,8 @@ def get_autos_by_filters(car_name):
     # inicio = (page - 1) * autos_por_pagina
     # fin = inicio + autos_por_pagina
     # cars = cars[inicio:fin]
+    
+    cars.sort(key=lambda x: int(x.precio)/int(x.kilometraje))
     
     return json_util.dumps([car for car in cars])
 
