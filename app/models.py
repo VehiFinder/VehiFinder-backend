@@ -5,8 +5,9 @@ class CarModel:
     collection = Config.db["cars2"]
 
     @classmethod
-    def save_car(cls, car):
-        cls.collection.insert_one(car.__dict__)
+    def save_car(cls, cars):
+        car = [car.__dict__ for car in cars]
+        cls.collection.insert_many(car)
 
     @classmethod
     def delete_car(cls, car_name):

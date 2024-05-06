@@ -16,7 +16,7 @@ class Carro:
         self.link = link # Link de la publicación
 
 
-def scrape_function(page_name, car_name):
+def scrape_function(page_name, car_name, page_number):
     tucarroName = car_name
     autocosmosName = car_name
     for name in tucarroName:
@@ -66,47 +66,45 @@ def scrape_function(page_name, car_name):
     criteria = pages.get(page_name).get("criteria")
     base_url = pages.get(page_name).get("url")
     all_cars = []
-    num_pages = 100
-    for i in range(1, num_pages + 1):
-        url = f"{base_url}_Desde_{(i-1)*48+1}_NoIndex_True"
-        get_page = requests.get(url)
-        if get_page.status_code != 200:
-            print("Error retrieving website")
-            break
-        html_obtenido = get_page.text
-        soup = BeautifulSoup(html_obtenido, "html.parser")
-        classes = criteria.get("classes")
-        css_selector = ", ".join([f"{class_name}" for class_name in classes.keys()])
-        content = soup.select(css_selector)
-        attributes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
-        iterator = 0
-        for value in content:
-            print(value.get_text(separator=" ", strip=True))
-            if value.img:
-                lista = attributes[6]
-                lista.append(value.img.get(pages.get(page_name).get("image_src")))
-            elif value.a:
-                lista = attributes[7]
-                lista.append(value.a.get(pages.get(page_name).get("link")))
-            else:
-                class_name = [key for key in classes.keys() if value["class"][0] in key]
-                if len(class_name) >= 2:
-                    name = class_name[iterator]
-                    lista = attributes[classes.get(name)]
-                    # lista.append(''.join(filter(str.isdigit, value.get_text(separator=" ", strip=True))))
-                    lista.append(value.get_text(separator=" ", strip=True))
-                    if iterator == len(class_name) - 1:
-                        iterator = 0
-                    else:
-                        iterator += 1
+    num_pages = 5
+    # for i in range(1, num_pages + 1):
+    url = f"{base_url}_Desde_{(page_number-1)*48+1}_NoIndex_True"
+    get_page = requests.get(url)
+    if get_page.status_code != 200:
+        print("Error retrieving website")
+        # break
+    html_obtenido = get_page.text
+    soup = BeautifulSoup(html_obtenido, "html.parser")
+    classes = criteria.get("classes")
+    css_selector = ", ".join([f"{class_name}" for class_name in classes.keys()])
+    content = soup.select(css_selector)
+    attributes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
+    iterator = 0
+    for value in content:
+        print(value.get_text(separator=" ", strip=True))
+        if value.img:
+            lista = attributes[6]
+            lista.append(value.img.get(pages.get(page_name).get("image_src")))
+        elif value.a:
+            lista = attributes[7]
+            lista.append(value.a.get(pages.get(page_name).get("link")))
+        else:
+            class_name = [key for key in classes.keys() if value["class"][0] in key]
+            if len(class_name) >= 2:
+                name = class_name[iterator]
+                lista = attributes[classes.get(name)]
+                # lista.append(''.join(filter(str.isdigit, value.get_text(separator=" ", strip=True))))
+                lista.append(value.get_text(separator=" ", strip=True))
+                if iterator == len(class_name) - 1:
+                    iterator = 0
                 else:
-                    lista = attributes[classes.get(class_name[0])]
-                    lista.append(value.get_text(separator=" ", strip=True))
-        cars = create_cars(attributes)
-        print("Longitud de cars: ", len(cars))
-        all_cars.extend(cars)
-        print("Longitud de all_cars: ", len(all_cars))
-    return all_cars
+                    iterator += 1
+            else:
+                lista = attributes[classes.get(class_name[0])]
+                lista.append(value.get_text(separator=" ", strip=True))
+    cars = create_cars(attributes)
+    all_cars.extend(cars)
+    return cars
 
 
 def create_cars(attributes):
