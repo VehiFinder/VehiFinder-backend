@@ -2,7 +2,7 @@ from config import Config
 
 
 class CarModel:
-    collection = Config.db["cars2"]
+    collection = Config.db["cars"]
 
     @classmethod
     def save_car(cls, cars):

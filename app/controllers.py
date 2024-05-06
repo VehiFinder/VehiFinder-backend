@@ -27,7 +27,7 @@ def autos():
     models.CarModel.save_car(carName)
     threading.Timer(7.0, delete_cars, args=[carName]).start()
     
-    carName.sort(key=lambda x: int(x.precio)/int(x.kilometraje))
+    carName.sort(key=lambda x: int(x.precio)/int(x.kilometraje) if int(x.kilometraje) != 0 else 0)
     return json_util.dumps([car.__dict__ for car in carName])
 
 # @app.route('/autos/<string:car_name>/<string:year>')
@@ -47,6 +47,8 @@ def get_autos_by_filters(car_name):
     # for car in carName:
     models.CarModel.save_car(carName)
     threading.Timer(7.0, delete_cars, args=[carName]).start()
+    
+    carName.sort(key=lambda x: int(x.precio)/int(x.kilometraje) if int(x.kilometraje) != 0 else 0)
     
     year_min = request.args.get('year_min')
     year_max = request.args.get('year_max')
@@ -82,7 +84,7 @@ def get_autos_by_filters(car_name):
     # fin = inicio + autos_por_pagina
     # cars = cars[inicio:fin]
     
-    cars.sort(key=lambda x: int(x.precio)/int(x.kilometraje))
+    
     
     return json_util.dumps([car for car in cars])
 
