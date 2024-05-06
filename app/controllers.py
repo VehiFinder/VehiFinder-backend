@@ -20,9 +20,9 @@ def delete_cars(car_name):
 
 @app.route('/api/autos')
 def autos():
-    carName = scrape_function("tucarro", "")
-    for car in carName:
-        models.CarModel.save_car(car)
+    page_number = int(request.args.get('page'))
+    carName = scrape_function("tucarro", "", page_number)
+    models.CarModel.save_car(carName)
     threading.Timer(7.0, delete_cars, args=[carName]).start()
     return json_util.dumps([car.__dict__ for car in carName])
 
