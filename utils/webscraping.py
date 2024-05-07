@@ -33,7 +33,7 @@ def scrape_function(page_name, car_name, page_number):
             "criteria": {
                 "classes": {
                     ".ui-search-item__title": 1,
-                    ".andes-money-amount__fraction:not(.ui-search-carousel--billboard span)": 2,
+                    ".andes-money-amount.ui-search-price__part.ui-search-price__part--medium.andes-money-amount--cents-superscript:first-of-type": 2,
                     ".ui-search-card-attributes__attribute:first-of-type": 3,
                     ".ui-search-card-attributes__attribute:nth-of-type(2)": 4,
                     ".ui-search-item__group__element.ui-search-item__location": 5,
@@ -63,11 +63,9 @@ def scrape_function(page_name, car_name, page_number):
     global carName
     carName = car_name
     cars = []
+    all_cars = []
     criteria = pages.get(page_name).get("criteria")
     base_url = pages.get(page_name).get("url")
-    all_cars = []
-    num_pages = 5
-    # for i in range(1, num_pages + 1):
     url = f"{base_url}_Desde_{(page_number-1)*48+1}_NoIndex_True"
     get_page = requests.get(url)
     if get_page.status_code != 200:
@@ -81,7 +79,7 @@ def scrape_function(page_name, car_name, page_number):
     attributes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []}
     iterator = 0
     for value in content:
-        print(value.get_text(separator=" ", strip=True))
+        # print(value.get_text(separator=" ", strip=True))
         if value.img:
             lista = attributes[6]
             lista.append(value.img.get(pages.get(page_name).get("image_src")))
@@ -90,6 +88,7 @@ def scrape_function(page_name, car_name, page_number):
             lista.append(value.a.get(pages.get(page_name).get("link")))
         else:
             class_name = [key for key in classes.keys() if value["class"][0] in key]
+            
             if len(class_name) >= 2:
                 name = class_name[iterator]
                 lista = attributes[classes.get(name)]
@@ -109,7 +108,10 @@ def scrape_function(page_name, car_name, page_number):
 
 def create_cars(attributes):
     cars = []
+    # print(f"Length of attributes[1]: {len(attributes[1])}")
+    # print(f"Length of attributes[2]: {len(attributes[2])}")
     for car_index in range(0, len(attributes[1])):
+        print(f"Creating car {attributes[1][car_index]} with price {attributes[2][car_index]}")
         new_car = Carro(
             attributes[1][car_index],
             re.sub("[^0-9]", "", attributes[2][car_index]),
@@ -119,8 +121,8 @@ def create_cars(attributes):
             attributes[6][car_index],
             attributes[7][car_index],
         )
+        # print(attributes[2][car_index])
         cars.append(new_car)
-
     return cars
 
 # scrape_function("tucarro", "mazda 3")
