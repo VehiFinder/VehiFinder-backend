@@ -25,7 +25,7 @@ def autos():
     
     carName = scrape_function("tucarro", "", page_number)
     models.CarModel.save_car(carName)
-    threading.Timer(7.0, delete_cars, args=[carName]).start()
+    threading.Timer(1.0, delete_cars, args=[carName]).start()
     
     carName.sort(key=lambda x: int(x.precio)/int(x.kilometraje) if int(x.kilometraje) != 0 else 0)
     return json_util.dumps([car.__dict__ for car in carName])
@@ -46,7 +46,7 @@ def get_autos_by_filters(car_name):
     carName = scrape_function("tucarro", car_name, page_number)
     # for car in carName:
     models.CarModel.save_car(carName)
-    threading.Timer(7.0, delete_cars, args=[carName]).start()
+    threading.Timer(1.0, delete_cars, args=[carName]).start()
     
     carName.sort(key=lambda x: int(x.precio)/int(x.kilometraje) if int(x.kilometraje) != 0 else 0)
     
